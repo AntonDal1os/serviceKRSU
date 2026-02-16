@@ -10,6 +10,7 @@ import {
   useMediaQuery
 } from '@mui/material';
 import NavigMenu from './NavigMenu';
+import logo from '../../../assets/images/logo_1.png';
 
 const Header = () => {
   const theme = useTheme();
@@ -29,7 +30,7 @@ const Header = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
             <Box 
               component="img"
-              src="/assets/images/spbstu-logo.png" // Добавьте логотип в public/assets
+              src={logo}
               alt="СПбПУ"
               sx={{ 
                 height: 50,
