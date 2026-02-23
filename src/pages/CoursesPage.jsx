@@ -58,7 +58,6 @@ const CoursesPage = () => {
     studentLabel: (index) => `Студент ${index}`,
     fullNameLabel: 'ФИО студента',
     emailLabel: 'Email студента',
-    phoneLabel: 'Телефон студента',
     addStudent: 'Добавить студента',
     submit: (count) =>
       `Записать ${count} ${pluralize(count, 'студента', 'студента', 'студентов')} на курс`,
@@ -69,7 +68,6 @@ const CoursesPage = () => {
       required: 'Поле обязательно',
       invalidEmail: 'Некорректный email',
       invalidName: 'Допустимы только буквы, пробелы и дефисы',
-      invalidPhone: 'Некорректный телефон',
     },
   };
 
