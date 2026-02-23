@@ -40,7 +40,9 @@ const defaultErrors = {
   required: 'Поле обязательно',
   invalidName: 'Введите корректное ФИО',
   invalidEmail: 'Введите корректный email',
+
   invalidPhone: 'Введите телефон в формате стран СНГ (например, +7, +375, +996)',
+  invalidPhone: 'Введите корректный телефон',
   invalidFile: 'Допустимы только файлы .doc, .docx и .pdf',
 };
 
@@ -66,10 +68,12 @@ const allowedExtensions = ['doc', 'docx', 'pdf'];
 const phoneAllowedCharsRegex = /^\+?[0-9()\s-]+$/;
 const cisDialingCodes = ['7', '374', '994', '375', '996', '992', '998', '993', '373'];
 
+
 const hasAllowedFileExtension = (fileName) => {
   const extension = fileName.split('.').pop()?.toLowerCase();
   return Boolean(extension) && allowedExtensions.includes(extension);
 };
+
 
 const normalizePhoneDigits = (value) => {
   const digits = value.replace(/\D/g, '');
@@ -93,6 +97,7 @@ const isValidCisPhone = (value) => {
   return cisDialingCodes.some((code) => digits.startsWith(code));
 };
 
+
 const ProfessionalDevelopmentRequestForm = ({
   courses = [],
   onSubmit,
@@ -111,6 +116,9 @@ const ProfessionalDevelopmentRequestForm = ({
   const nameRegex = /^[\p{L}\s.'-]{2,}$/u;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+  const phoneRegex = /^\+?[0-9()\s-]+$/;
+
+
   const validate = (nextValues = values) => {
     const nextErrors = createInitialErrors();
     let isValid = true;
@@ -118,6 +126,9 @@ const ProfessionalDevelopmentRequestForm = ({
     const fullName = nextValues.fullName.trim();
     const email = nextValues.email.trim();
     const phone = nextValues.phone.trim();
+
+    const digitsCount = phone.replace(/\D/g, '').length;
+
 
     if (!nextValues.course) {
       nextErrors.course = errorText.required;
@@ -143,7 +154,11 @@ const ProfessionalDevelopmentRequestForm = ({
     if (!phone) {
       nextErrors.phone = errorText.required;
       isValid = false;
+
     } else if (!isValidCisPhone(phone)) {
+
+    } else if (!phoneRegex.test(phone) || digitsCount < 10 || digitsCount > 15) {
+
       nextErrors.phone = errorText.invalidPhone;
       isValid = false;
     }
