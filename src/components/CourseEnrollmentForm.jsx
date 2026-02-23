@@ -23,7 +23,6 @@ const defaultLabels = {
   studentLabel: 'Student',
   fullNameLabel: 'Full name',
   emailLabel: 'Email',
-  phoneLabel: 'Phone',
   addStudent: 'Add student',
   submit: 'Enroll students',
   policyText: 'By submitting the form, you agree to data processing.',
@@ -34,10 +33,9 @@ const defaultErrors = {
   required: 'Required field',
   invalidEmail: 'Invalid email format',
   invalidName: 'Use letters, spaces, or hyphens',
-  invalidPhone: 'Invalid phone format',
 };
 
-const createEmptyStudent = () => ({ fullName: '', email: '', phone: '' });
+const createEmptyStudent = () => ({ fullName: '', email: '' });
 
 const CourseEnrollmentForm = ({
   universities = [],
@@ -62,13 +60,12 @@ const CourseEnrollmentForm = ({
 
   const nameRegex = /^[\p{L}\s.'-]{2,}$/u;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const phoneRegex = /^\+?[0-9()\s-]+$/;
 
   const validate = (nextValues = formValues, nextStudents = students) => {
     const nextErrors = {
       university: '',
       course: '',
-      students: nextStudents.map(() => ({ fullName: '', email: '', phone: '' })),
+      students: nextStudents.map(() => ({ fullName: '', email: '' })),
     };
     let isValid = true;
 
@@ -85,7 +82,6 @@ const CourseEnrollmentForm = ({
     nextStudents.forEach((student, index) => {
       const fullName = student.fullName.trim();
       const email = student.email.trim();
-      const phone = student.phone.trim();
 
       if (!fullName) {
         nextErrors.students[index].fullName = errorText.required;
@@ -100,15 +96,6 @@ const CourseEnrollmentForm = ({
         isValid = false;
       } else if (!emailRegex.test(email)) {
         nextErrors.students[index].email = errorText.invalidEmail;
-        isValid = false;
-      }
-
-      const digitsCount = phone.replace(/\D/g, '').length;
-      if (!phone) {
-        nextErrors.students[index].phone = errorText.required;
-        isValid = false;
-      } else if (!phoneRegex.test(phone) || digitsCount < 10 || digitsCount > 15) {
-        nextErrors.students[index].phone = errorText.invalidPhone;
         isValid = false;
       }
     });
@@ -177,7 +164,6 @@ const CourseEnrollmentForm = ({
       students: students.map((student) => ({
         fullName: student.fullName.trim(),
         email: student.email.trim(),
-        phone: student.phone.trim(),
       })),
     };
 
@@ -297,17 +283,6 @@ const CourseEnrollmentForm = ({
                       onChange={handleStudentChange(index, 'email')}
                       error={Boolean(errors.students[index]?.email)}
                       helperText={errors.students[index]?.email}
-                      fullWidth
-                    />
-
-                    <TextField
-                      type="tel"
-                      label={labels.phoneLabel}
-                      value={student.phone}
-                      onChange={handleStudentChange(index, 'phone')}
-                      error={Boolean(errors.students[index]?.phone)}
-                      helperText={errors.students[index]?.phone}
-                      inputProps={{ inputMode: 'tel' }}
                       fullWidth
                     />
                   </Stack>
