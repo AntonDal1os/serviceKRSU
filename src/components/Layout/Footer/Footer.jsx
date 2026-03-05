@@ -4,7 +4,7 @@ import {
   Container, 
   Grid, 
   Typography, 
-  Link, 
+  Link as MuiLink, 
   Box,
 } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
@@ -13,6 +13,14 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const supportEmail = 'support@spbstu.ru';
+  const mailSubject = 'Поддержка платформы СПбПУ';
+  const mailToHref = `mailto:${supportEmail}?subject=${encodeURIComponent(mailSubject)}`;
+  const address = '195251, Санкт-Петербург, ул. Политехническая, дом 29, Научно-исследовательский корпус';
+  const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+  const privacyPdfHref = '/docs/personal_data_policy.pdf';
+  const cookiePdfHref = '/docs/personal_cookie.pdf';
+  const vkHref = 'https://vk.com/polytech_petra';
 
   return (
     <Box
@@ -33,48 +41,76 @@ const Footer = () => {
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
               <EmailIcon sx={{ mr: 1 }} />
-              <Link 
-                href="mailto:support@spbstu.ru" 
+              <MuiLink 
+                href={mailToHref}
                 color="inherit"
                 underline="hover"
               >
-                support@spbstu.ru
-              </Link>
+                {supportEmail}
+              </MuiLink>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
               <PhoneIcon sx={{ mr: 1 }} />
-              <Typography>+7 (812) 123-45-67</Typography>
+              <MuiLink href="tel:+78121234567" color="inherit" underline="hover">
+                +7 (812) 123-45-67
+              </MuiLink>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <LocationOnIcon sx={{ mr: 1 }} />
-              <Typography>г. Санкт-Петербург, Политехническая ул., 29</Typography>
+              <MuiLink
+                href={mapsHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                color="inherit"
+                underline="hover"
+              >
+                {address}
+              </MuiLink>
             </Box>
           </Grid>
 
-          {/* Быстрые ссылки */}
+          {/* Документы */}
           <Grid item xs={12} md={4}>
             <Typography variant="h6" gutterBottom>
-              Политики
+              Документы
             </Typography>
-            <Link href="/privacy" color="inherit" display="block" underline="hover">
+            <MuiLink
+              href={privacyPdfHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              color="inherit"
+              display="block"
+              underline="hover"
+            >
               Политика конфиденциальности
-            </Link>
-            <Link href="/terms" color="inherit" display="block" underline="hover">
-              Условия использования
-            </Link>
-            <Link href="/cookies" color="inherit" display="block" underline="hover">
-              Политика использования cookies
-            </Link>
+            </MuiLink>
+            <MuiLink
+              href={cookiePdfHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              color="inherit"
+              display="block"
+              underline="hover"
+            >
+              Политика обработки cookie
+            </MuiLink>
           </Grid>
 
-          {/* Партнеры */}
+          {/* Социальные сети */}
           <Grid item xs={12} md={4}>
             <Typography variant="h6" gutterBottom>
-              Вузы-партнеры
+              Социальные сети
             </Typography>
-            <Typography variant="body2">
-              КРСУ, БГУ, КазНУ и другие университеты СНГ
-            </Typography>
+            <MuiLink
+              href={vkHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              color="inherit"
+              underline="hover"
+              display="inline-block"
+            >
+              VK
+            </MuiLink>
           </Grid>
         </Grid>
 
