@@ -61,13 +61,17 @@ const ActionButtons = () => {
         Основные разделы
       </Typography>
       
-      <Grid container spacing={4} justifyContent="center">
+      <Grid container spacing={4} justifyContent="center" alignItems="stretch">
         {buttons.map((button, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index} sx={{ maxWidth: 400 }}>
+          <Grid item xs={12} sm={6} md={6} lg={4} key={index} sx={{ display: 'flex' }}>
             <Box
               sx={{
                 p: 4,
-                height: '100%',
+                width: { xs: '100%', md: '337.53px' },
+                maxWidth: { xs: '100%', md: '337.53px' },
+                height: { xs: '100%', md: '340px' },
+                minHeight: { xs: 320, md: '340px' },
+                mx: 'auto',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
@@ -114,6 +118,7 @@ const ActionButtons = () => {
                 variant="contained"
                 fullWidth
                 sx={{
+                  minHeight: 44,
                   backgroundColor: button.color,
                   '&:hover': {
                     backgroundColor: button.color,
