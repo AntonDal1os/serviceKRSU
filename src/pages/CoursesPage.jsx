@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Box, Container, Divider, Paper, Typography } from '@mui/material';
+import React from 'react';
+import { Container, Divider, Typography } from '@mui/material';
 import CourseEnrollmentForm from '../components/CourseEnrollmentForm';
 import ProfessionalDevelopmentRequestForm from '../components/ProfessionalDevelopmentRequestForm';
 
@@ -30,11 +30,7 @@ const pluralize = (count, one, few, many) => {
 };
 
 const CoursesPage = () => {
-  const [lastPayload, setLastPayload] = useState(null);
-  const [lastQualificationPayload, setLastQualificationPayload] = useState(null);
-
   const handleSubmit = (payload) => {
-    setLastPayload(payload);
     // eslint-disable-next-line no-console
     console.log('Enrollment payload:', payload);
   };
@@ -45,7 +41,6 @@ const CoursesPage = () => {
       statementFileName: payload.statementFile?.name || '',
       consentFileName: payload.consentFile?.name || '',
     };
-    setLastQualificationPayload(normalizedPayload);
     // eslint-disable-next-line no-console
     console.log('Professional development payload:', normalizedPayload);
   };
@@ -88,32 +83,6 @@ const CoursesPage = () => {
         onSubmit={handleSubmit}
       />
 
-      {lastPayload ? (
-        <Paper variant="outlined" sx={{ mt: 4, p: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            JSON-пакет для отправки
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Это то, что можно отправить на сервер в формате JSON.
-          </Typography>
-          <Box
-            component="pre"
-            sx={{
-              m: 0,
-              p: 2,
-              backgroundColor: '#f7fafc',
-              borderRadius: 2,
-              fontSize: 14,
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word',
-              fontFamily: 'SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace',
-            }}
-          >
-            {JSON.stringify(lastPayload, null, 2)}
-          </Box>
-        </Paper>
-      ) : null}
-
       <Divider sx={{ my: 6 }} />
 
       <Typography variant="h3" gutterBottom sx={{ fontSize: { xs: '1.8rem', md: '2.2rem' } }}>
@@ -124,32 +93,6 @@ const CoursesPage = () => {
       </Typography>
 
       <ProfessionalDevelopmentRequestForm courses={courses} onSubmit={handleQualificationSubmit} />
-
-      {lastQualificationPayload ? (
-        <Paper variant="outlined" sx={{ mt: 4, p: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            JSON-пакет по заявке на повышение квалификации
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            В payload сохранены названия файлов, готовые для отправки вместе с FormData.
-          </Typography>
-          <Box
-            component="pre"
-            sx={{
-              m: 0,
-              p: 2,
-              backgroundColor: '#f7fafc',
-              borderRadius: 2,
-              fontSize: 14,
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word',
-              fontFamily: 'SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace',
-            }}
-          >
-            {JSON.stringify(lastQualificationPayload, null, 2)}
-          </Box>
-        </Paper>
-      ) : null}
     </Container>
   );
 };
