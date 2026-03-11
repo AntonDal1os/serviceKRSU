@@ -18,8 +18,9 @@ const Footer = () => {
   const mailToHref = `mailto:${supportEmail}?subject=${encodeURIComponent(mailSubject)}`;
   const address = '195251, Санкт-Петербург, ул. Политехническая, дом 29, Научно-исследовательский корпус';
   const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-  const privacyPdfHref = '/docs/personal_data_policy.pdf';
-  const cookiePdfHref = '/docs/personal_cookie.pdf';
+  const publicBase = process.env.PUBLIC_URL || '';
+  const privacyPdfHref = `${publicBase}/docs/personal_data_policy.pdf`;
+  const cookiePdfHref = `${publicBase}/docs/personal_cookie.pdf`;
   const vkHref = 'https://vk.com/polytech_petra';
 
   return (
