@@ -199,7 +199,18 @@ const CourseEnrollmentForm = ({
 
   return (
     <Container maxWidth="sm" sx={{ px: 0 }}>
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          borderRadius: 3,
+          transition: 'transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: '0px 12px 28px rgba(15, 23, 42, 0.12)',
+          },
+        }}
+      >
         <Typography variant="h5" gutterBottom>
           {labels.title}
         </Typography>
