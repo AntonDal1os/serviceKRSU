@@ -20,7 +20,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CourseEnrollmentForm from '../components/CourseEnrollmentForm';
-import ProfessionalDevelopmentRequestForm from '../components/ProfessionalDevelopmentRequestForm';
+import { courses } from '../data/courses';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api/v1';
 
@@ -29,13 +29,6 @@ const universities = [
   { id: 'kstu', name: 'КГТУ им. И. Раззакова' },
   { id: 'ksua', name: 'КГУСТА им. Н. Исанова' },
   { id: 'osu', name: 'ОшГУ' },
-];
-
-const courses = [
-  { id: 'frontend', name: 'Frontend разработка' },
-  { id: 'backend', name: 'Backend разработка' },
-  { id: 'qa', name: 'QA Engineer' },
-  { id: 'uiux', name: 'UI/UX дизайн' },
 ];
 
 const openCourses = [
@@ -170,38 +163,6 @@ const CoursesPage = () => {
     }
   };
 
-  const handleQualificationSubmit = async (payload) => {
-    try {
-      const formData = new FormData();
-      formData.append('courseId', payload.courseId);
-      formData.append('fullName', payload.fullName);
-      formData.append('email', payload.email);
-      if (payload.phone) {
-        formData.append('phone', payload.phone);
-      }
-      if (payload.statementFile) {
-        formData.append('statementFile', payload.statementFile);
-      }
-      if (payload.consentFile) {
-        formData.append('consentFile', payload.consentFile);
-      }
-
-      const response = await fetch(`${API_BASE_URL}/prof-dev`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        throw new Error(data?.error || 'Failed to submit professional development request');
-      }
-
-      console.log('Professional development submitted:', data);
-    } catch (error) {
-      console.error('Professional development submit error:', error);
-    }
-  };
-
   const labels = {
     title: 'Форма записи',
     universityPlaceholder: 'Выберите университет',
@@ -325,17 +286,6 @@ const CoursesPage = () => {
           </Paper>
         </Box>
       </Stack>
-
-      <Divider sx={{ my: 6 }} />
-
-      <Typography variant="h3" gutterBottom sx={{ fontSize: { xs: '1.8rem', md: '2.2rem' } }}>
-        Подача заявки на повышение квалификации
-      </Typography>
-      <Typography variant="body1" sx={{ mb: 4 }}>
-        Заполните форму и приложите заявление с согласием на обработку персональных данных.
-      </Typography>
-
-      <ProfessionalDevelopmentRequestForm courses={courses} onSubmit={handleQualificationSubmit} />
 
       <Divider sx={{ my: 6 }} />
 
