@@ -4,18 +4,21 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Button,
   Chip,
   Container,
   Divider,
   IconButton,
   Menu,
   MenuItem,
+  Paper,
   Stack,
   Typography,
 } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CourseEnrollmentForm from '../components/CourseEnrollmentForm';
 import ProfessionalDevelopmentRequestForm from '../components/ProfessionalDevelopmentRequestForm';
 
@@ -33,6 +36,13 @@ const courses = [
   { id: 'backend', name: 'Backend разработка' },
   { id: 'qa', name: 'QA Engineer' },
   { id: 'uiux', name: 'UI/UX дизайн' },
+];
+
+const openCourses = [
+  { id: 'frontend-spring-2026', title: 'Frontend-инженер' },
+  { id: 'backend-spring-2026', title: 'Backend-разработка' },
+  { id: 'qa-spring-2026', title: 'QA Engineer' },
+  { id: 'uiux-spring-2026', title: 'UI/UX дизайн' },
 ];
 
 const faqCategories = [
@@ -186,10 +196,8 @@ const CoursesPage = () => {
         throw new Error(data?.error || 'Failed to submit professional development request');
       }
 
-      // eslint-disable-next-line no-console
       console.log('Professional development submitted:', data);
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('Professional development submit error:', error);
     }
   };
@@ -224,13 +232,99 @@ const CoursesPage = () => {
         Запись студентов на выбранные курсы.
       </Typography>
 
-      <CourseEnrollmentForm
-        universities={universities}
-        courses={courses}
-        maxStudents={30}
-        labels={labels}
-        onSubmit={handleSubmit}
-      />
+      <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 3, md: 4 }} alignItems="stretch">
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <CourseEnrollmentForm
+            universities={universities}
+            courses={courses}
+            maxStudents={30}
+            labels={labels}
+            onSubmit={handleSubmit}
+          />
+        </Box>
+        <Box sx={{ width: { xs: '100%', md: 320, lg: 360 }, flexShrink: 0 }}>
+          <Paper
+            elevation={0}
+            sx={(theme) => ({
+              position: 'relative',
+              overflow: 'hidden',
+              borderRadius: 3,
+              border: '1px solid',
+              borderColor: alpha(theme.palette.primary.main, 0.18),
+              p: { xs: 2, sm: 3 },
+              background: `linear-gradient(180deg, ${alpha(
+                theme.palette.primary.main,
+                0.08,
+              )} 0%, ${alpha(theme.palette.primary.main, 0.02)} 60%)`,
+              transition: 'transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: '0px 12px 28px rgba(15, 23, 42, 0.12)',
+                borderColor: alpha(theme.palette.primary.main, 0.35),
+              },
+              '&:before': {
+                content: '""',
+                position: 'absolute',
+                top: -40,
+                right: -50,
+                width: 140,
+                height: 140,
+                borderRadius: '50%',
+                background: alpha(theme.palette.primary.main, 0.12),
+              },
+            })}
+          >
+            <Stack spacing={2}>
+              <Box>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
+                  <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    Открытые наборы
+                  </Typography>
+                  <Chip
+                    label={`${openCourses.length} программы`}
+                    size="small"
+                    color="primary"
+                    variant="outlined"
+                  />
+                </Stack>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                  Подборка актуальных потоков с местами для записи.
+                </Typography>
+              </Box>
+
+              <Stack spacing={1.5}>
+                {openCourses.map((course) => (
+                  <Paper
+                    key={course.id}
+                    variant="outlined"
+                    sx={(theme) => ({
+                      p: 1.8,
+                      borderRadius: 2,
+                      borderColor: alpha(theme.palette.primary.main, 0.18),
+                      backgroundColor: theme.palette.background.paper,
+                      boxShadow: '0px 8px 20px rgba(15, 23, 42, 0.05)',
+                    })}
+                  >
+                    <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                        {course.title}
+                      </Typography>
+                      <Button
+                        size="small"
+                        endIcon={<ArrowForwardIcon />}
+                        href={`/courses/${course.id}`}
+                        sx={{ whiteSpace: 'nowrap' }}
+                      >
+                        Подробнее
+                      </Button>
+                    </Stack>
+                  </Paper>
+                ))}
+              </Stack>
+            </Stack>
+          </Paper>
+        </Box>
+      </Stack>
 
       <Divider sx={{ my: 6 }} />
 
