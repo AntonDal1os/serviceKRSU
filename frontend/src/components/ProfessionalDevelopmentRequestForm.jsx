@@ -7,6 +7,7 @@ import {
   Container,
   Divider,
   Grid,
+  IconButton,
   MenuItem,
   Paper,
   Stack,
@@ -14,6 +15,7 @@ import {
   Typography,
 } from '@mui/material';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
 const defaultLabels = {
   title: 'Форма заявки',
@@ -29,6 +31,7 @@ const defaultLabels = {
   consentTitle: '2. Согласие на обработку персональных данных',
   consentButton: 'Загрузить согласие',
   replaceFile: 'Выбрать другой файл',
+  removeFile: 'Удалить файл',
   supportedFormats: 'Поддерживаемые форматы: .doc, .docx, .pdf',
   policyText:
     'Защищено SmartCaptcha. Отправляя форму, вы подтверждаете, что ознакомлены с обработкой данных.',
@@ -202,6 +205,19 @@ const ProfessionalDevelopmentRequestForm = ({
     }
   };
 
+  const handleFileRemove = (field, inputRef) => () => {
+    setValues((prev) => ({ ...prev, [field]: null }));
+    setShowSuccess(false);
+
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: '' }));
+    }
+  };
+
   const resetFileInputs = () => {
     if (statementInputRef.current) {
       statementInputRef.current.value = '';
@@ -281,9 +297,27 @@ const ProfessionalDevelopmentRequestForm = ({
           />
         </Button>
         {file ? (
-          <Typography variant="body2" sx={{ mt: 1 }}>
-            {file.name}
-          </Typography>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={1}
+            alignItems={{ xs: 'flex-start', sm: 'center' }}
+            justifyContent="space-between"
+            sx={{ mt: 1 }}
+          >
+            <Typography variant="body2">
+              {file.name}
+            </Typography>
+            <IconButton
+              type="button"
+              color="error"
+              size="small"
+              aria-label={labels.removeFile}
+              title={labels.removeFile}
+              onClick={handleFileRemove(field, inputRef)}
+            >
+              <DeleteOutlineIcon fontSize="small" />
+            </IconButton>
+          </Stack>
         ) : null}
       </Paper>
 
