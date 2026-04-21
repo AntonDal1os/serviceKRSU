@@ -21,8 +21,8 @@ const ActionButtons = () => {
       color: '#003366',
     },
     {
-      title: 'Документы',
-      description: 'Учебные и нормативные документы',
+      title: 'Повышение квалификации',
+      description: 'Документы и формы',
       icon: <DescriptionIcon sx={{ fontSize: 40 }} />,
       path: '/documents',
       color: '#004080',
