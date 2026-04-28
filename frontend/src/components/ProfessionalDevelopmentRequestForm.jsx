@@ -44,7 +44,6 @@ const defaultErrors = {
   invalidName: 'Введите корректное ФИО',
   invalidEmail: 'Введите корректный email',
 
-  invalidPhone: 'Введите телефон в формате стран СНГ (например, +7, +375, +996)',
   invalidPhone: 'Введите корректный телефон',
   invalidFile: 'Допустимы только файлы .doc, .docx и .pdf',
 };
@@ -158,10 +157,7 @@ const ProfessionalDevelopmentRequestForm = ({
       nextErrors.phone = errorText.required;
       isValid = false;
 
-    } else if (!isValidCisPhone(phone)) {
-
-    } else if (!phoneRegex.test(phone) || digitsCount < 10 || digitsCount > 15) {
-
+    } else if (!isValidCisPhone(phone) || !phoneRegex.test(phone) || digitsCount < 10 || digitsCount > 15) {
       nextErrors.phone = errorText.invalidPhone;
       isValid = false;
     }
