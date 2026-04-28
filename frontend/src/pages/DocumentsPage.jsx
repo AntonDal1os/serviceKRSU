@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -17,19 +17,21 @@ import ProfessionalDevelopmentRequestForm from '../components/ProfessionalDevelo
 import { courses } from '../data/courses';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api/v1';
+const PUBLIC_URL = process.env.PUBLIC_URL || '';
+const getTemplateHref = (fileName) => `${PUBLIC_URL}/templates/${fileName}`;
 
 const documentTemplates = [
   {
     id: 'statement',
     title: 'Заявление на повышение квалификации',
     description: 'Шаблон заявления для обучения по программе повышения квалификации.',
-    href: '/templates/prof-dev-statement.docx',
+    href: getTemplateHref('prof-dev-statement.docx'),
   },
   {
     id: 'consent',
     title: 'Согласие на обработку персональных данных',
     description: 'Шаблон согласия на обработку персональных данных.',
-    href: '/templates/personal-data-consent.docx',
+    href: getTemplateHref('personal-data-consent.docx'),
   },
 ];
 
