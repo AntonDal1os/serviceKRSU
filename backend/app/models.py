@@ -1,62 +1,74 @@
-from app import db
-from datetime import datetime
+from dataclasses import dataclass
+
+from app.database import get_db
 
 
-# Форма 1: Запись студентов на курс
-class Enrollment(db.Model):
-    __tablename__ = "enrollments"
-
-    id            = db.Column(db.Integer, primary_key=True)
-    university_id = db.Column(db.String(100), nullable=False)
-    course_id     = db.Column(db.String(100), nullable=False)
-    created_at    = db.Column(db.DateTime, default=datetime.utcnow)
-
-    students = db.relationship("EnrolledStudent", backref="enrollment", lazy=True)
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "university_id": self.university_id,
-            "course_id": self.course_id,
-            "created_at": self.created_at.isoformat(),
-            "students": [s.to_dict() for s in self.students]
-        }
+@dataclass(slots=True)
+class EnrollmentStudent:
+    full_name: str
+    email: str
 
 
-class EnrolledStudent(db.Model):
-    __tablename__ = "enrolled_students"
+def create_enrollment(university_id: str, course_id: str, students: list[EnrollmentStudent]) -> int:
+    connection = get_db()
 
-    id            = db.Column(db.Integer, primary_key=True)
-    enrollment_id = db.Column(db.Integer, db.ForeignKey("enrollments.id"), nullable=False)
-    full_name     = db.Column(db.String(200), nullable=False)
-    email         = db.Column(db.String(200), nullable=False)
+    with connection:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                INSERT INTO enrollments (university_id, course_id)
+                VALUES (%s, %s)
+                RETURNING id
+                """,
+                (university_id, course_id),
+            )
+            enrollment_id = cursor.fetchone()[0]
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "full_name": self.full_name,
-            "email": self.email
-        }
+            cursor.executemany(
+                """
+                INSERT INTO enrolled_students (enrollment_id, full_name, email)
+                VALUES (%s, %s, %s)
+                """,
+                [(enrollment_id, student.full_name, student.email) for student in students],
+            )
+
+    return enrollment_id
 
 
-class ProfDevApplication(db.Model):
-    __tablename__ = "prof_dev_applications"
+def create_prof_dev_application(
+    course_id: str,
+    full_name: str,
+    email: str,
+    phone: str | None,
+    statement_file_path: str | None,
+    consent_file_path: str | None,
+) -> int:
+    connection = get_db()
 
-    id                  = db.Column(db.Integer, primary_key=True)
-    course_id           = db.Column(db.String(100), nullable=False)
-    full_name           = db.Column(db.String(200), nullable=False)
-    email               = db.Column(db.String(200), nullable=False)
-    phone               = db.Column(db.String(50))
-    statement_file_path = db.Column(db.String(500))
-    consent_file_path   = db.Column(db.String(500))
-    created_at          = db.Column(db.DateTime, default=datetime.utcnow)
+    with connection:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                INSERT INTO prof_dev_applications (
+                    course_id,
+                    full_name,
+                    email,
+                    phone,
+                    statement_file_path,
+                    consent_file_path
+                )
+                VALUES (%s, %s, %s, %s, %s, %s)
+                RETURNING id
+                """,
+                (
+                    course_id,
+                    full_name,
+                    email,
+                    phone,
+                    statement_file_path,
+                    consent_file_path,
+                ),
+            )
+            application_id = cursor.fetchone()[0]
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "course_id": self.course_id,
-            "full_name": self.full_name,
-            "email": self.email,
-            "phone": self.phone,
-            "created_at": self.created_at.isoformat()
-        }
+    return application_id
