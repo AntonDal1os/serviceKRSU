@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   Box,
@@ -102,6 +102,7 @@ const isValidCisPhone = (value) => {
 
 const ProfessionalDevelopmentRequestForm = ({
   courses = [],
+  selectedCourseId = '',
   onSubmit,
   labels: labelsProp = {},
 }) => {
@@ -119,6 +120,18 @@ const ProfessionalDevelopmentRequestForm = ({
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const phoneRegex = /^\+?[0-9()\s-]+$/;
+
+  useEffect(() => {
+    if (!selectedCourseId) {
+      return;
+    }
+
+    setValues((prev) => (
+      prev.course === selectedCourseId ? prev : { ...prev, course: selectedCourseId }
+    ));
+    setShowSuccess(false);
+    setErrors((prev) => (prev.course ? { ...prev, course: '' } : prev));
+  }, [selectedCourseId]);
 
 
   const validate = (nextValues = values) => {

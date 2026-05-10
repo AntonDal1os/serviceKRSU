@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -50,6 +50,16 @@ const qualificationPrograms = courses.map((course) => ({
 const contentMaxWidth = 976;
 
 const DocumentsPage = () => {
+  const [selectedCourseId, setSelectedCourseId] = useState('');
+  const formSectionRef = useRef(null);
+
+  const handleProgramSelect = (programId) => {
+    setSelectedCourseId(programId);
+    window.requestAnimationFrame(() => {
+      formSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
   const handleQualificationSubmit = async (payload) => {
     try {
       const formData = new FormData();
@@ -77,6 +87,7 @@ const DocumentsPage = () => {
       }
 
       console.log('Professional development submitted:', data);
+      setSelectedCourseId('');
     } catch (error) {
       console.error('Professional development submit error:', error);
     }
@@ -131,41 +142,61 @@ const DocumentsPage = () => {
           </Stack>
 
           <Stack spacing={1}>
-            {qualificationPrograms.map((program) => (
-              <Accordion
-                key={program.id}
-                disableGutters
-                sx={{
-                  borderRadius: 2,
-                  border: '1px solid rgba(15, 23, 42, 0.12)',
-                  boxShadow: 'none',
-                  backgroundColor: '#ffffff',
-                  transition: 'border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease',
-                  '&:before': { display: 'none' },
-                  '&:hover': {
-                    borderColor: 'rgba(21, 101, 192, 0.45)',
-                    boxShadow: '0px 10px 22px rgba(15, 23, 42, 0.08)',
-                    backgroundColor: '#f6fbff',
-                  },
-                }}
-              >
-                <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 2 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                    {program.name}
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails sx={{ px: 2, pt: 0, pb: 2 }}>
-                  <Stack spacing={1.5}>
-                    <Typography variant="body2" color="text.secondary">
-                      {program.summary}
-                    </Typography>
-                    <Button variant="outlined" size="small" sx={{ alignSelf: 'flex-start' }}>
-                      Выбрать программу
-                    </Button>
-                  </Stack>
-                </AccordionDetails>
-              </Accordion>
-            ))}
+            {qualificationPrograms.map((program) => {
+              const isSelected = selectedCourseId === program.id;
+
+              return (
+                <Accordion
+                  key={program.id}
+                  disableGutters
+                  sx={{
+                    borderRadius: 2,
+                    border: isSelected
+                      ? '1px solid rgba(21, 101, 192, 0.7)'
+                      : '1px solid rgba(15, 23, 42, 0.12)',
+                    boxShadow: isSelected ? '0px 10px 22px rgba(21, 101, 192, 0.12)' : 'none',
+                    backgroundColor: isSelected ? '#eef7ff' : '#ffffff',
+                    transition: 'border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease',
+                    '&:before': { display: 'none' },
+                    '&:hover': {
+                      borderColor: 'rgba(21, 101, 192, 0.45)',
+                      boxShadow: '0px 10px 22px rgba(15, 23, 42, 0.08)',
+                      backgroundColor: '#f6fbff',
+                    },
+                  }}
+                >
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 2 }}>
+                    <Stack
+                      direction={{ xs: 'column', sm: 'row' }}
+                      spacing={1}
+                      alignItems={{ xs: 'flex-start', sm: 'center' }}
+                      justifyContent="space-between"
+                      sx={{ width: '100%', pr: 1 }}
+                    >
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                        {program.name}
+                      </Typography>
+                      {isSelected ? <Chip size="small" color="primary" label="Выбрана" /> : null}
+                    </Stack>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ px: 2, pt: 0, pb: 2 }}>
+                    <Stack spacing={1.5}>
+                      <Typography variant="body2" color="text.secondary">
+                        {program.summary}
+                      </Typography>
+                      <Button
+                        variant={isSelected ? 'contained' : 'outlined'}
+                        size="small"
+                        onClick={() => handleProgramSelect(program.id)}
+                        sx={{ alignSelf: 'flex-start' }}
+                      >
+                        {isSelected ? 'Выбрано в форме' : 'Выбрать программу'}
+                      </Button>
+                    </Stack>
+                  </AccordionDetails>
+                </Accordion>
+              );
+            })}
           </Stack>
         </Stack>
       </Paper>
@@ -259,8 +290,12 @@ const DocumentsPage = () => {
           </Paper>
         </Stack>
 
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <ProfessionalDevelopmentRequestForm courses={courses} onSubmit={handleQualificationSubmit} />
+        <Box ref={formSectionRef} sx={{ display: 'flex', justifyContent: 'center', scrollMarginTop: 24 }}>
+          <ProfessionalDevelopmentRequestForm
+            courses={courses}
+            selectedCourseId={selectedCourseId}
+            onSubmit={handleQualificationSubmit}
+          />
         </Box>
       </Box>
     </Container>
