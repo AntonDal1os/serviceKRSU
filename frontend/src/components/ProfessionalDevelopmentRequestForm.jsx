@@ -339,7 +339,7 @@ const ProfessionalDevelopmentRequestForm = ({
   );
 
   return (
-    <Container maxWidth="sm" sx={{ px: 0 }}>
+    <Container maxWidth={false} sx={{ px: 0, width: '100%' }}>
       <Paper elevation={3} sx={{ p: { xs: 3, sm: 4 }, borderRadius: 3 }}>
         <Typography variant="h5" sx={{ mb: 3, color: 'primary.main', fontWeight: 700 }}>
           {labels.title}
