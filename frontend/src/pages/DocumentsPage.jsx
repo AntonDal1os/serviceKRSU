@@ -204,16 +204,16 @@ const DocumentsPage = () => {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: '360px 600px' },
+          gridTemplateColumns: { xs: '1fr', md: '340px 620px' },
           gap: { xs: 2, md: 2 },
-          alignItems: 'start',
+          alignItems: 'stretch',
           justifyContent: 'center',
           mx: 'auto',
           width: '100%',
           maxWidth: { xs: '100%', md: contentMaxWidth },
         }}
       >
-        <Stack spacing={2} sx={{ justifySelf: { xs: 'stretch', md: 'center' } }}>
+        <Stack spacing={2} sx={{ justifySelf: 'stretch', height: '100%' }}>
           <Paper
             variant="outlined"
             sx={{
@@ -249,6 +249,7 @@ const DocumentsPage = () => {
               borderRadius: 3,
               backgroundColor: '#fdfdfd',
               borderColor: 'rgba(15, 23, 42, 0.12)',
+              flex: 1,
             }}
           >
             <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>
@@ -290,7 +291,7 @@ const DocumentsPage = () => {
           </Paper>
         </Stack>
 
-        <Box ref={formSectionRef} sx={{ display: 'flex', justifyContent: 'center', scrollMarginTop: 24 }}>
+        <Box ref={formSectionRef} sx={{ display: 'flex', justifyContent: 'stretch', scrollMarginTop: 24 }}>
           <ProfessionalDevelopmentRequestForm
             courses={courses}
             selectedCourseId={selectedCourseId}
