@@ -25,6 +25,7 @@ const defaultLabels = {
   emailLabel: 'Email',
   addStudent: 'Add student',
   submit: 'Enroll students',
+  submitting: 'Submitting...',
   policyText: 'By submitting the form, you agree to data processing.',
   maxHint: 'Maximum students: {{max}}',
 };
@@ -43,6 +44,7 @@ const CourseEnrollmentForm = ({
   maxStudents = 30,
   onSubmit,
   labels: labelsProp = {},
+  isSubmitting = false,
 }) => {
   const labels = { ...defaultLabels, ...labelsProp };
   const errorText = { ...defaultErrors, ...(labelsProp.errors || {}) };
@@ -129,7 +131,7 @@ const CourseEnrollmentForm = ({
   };
 
   const handleAddStudent = () => {
-    if (students.length >= maxStudents) {
+    if (isSubmitting || students.length >= maxStudents) {
       return;
     }
     setStudents((prev) => [...prev, createEmptyStudent()]);
@@ -140,7 +142,7 @@ const CourseEnrollmentForm = ({
   };
 
   const handleRemoveStudent = (index) => {
-    if (students.length <= 1) {
+    if (isSubmitting || students.length <= 1) {
       return;
     }
     setStudents((prev) => prev.filter((_, i) => i !== index));
@@ -152,6 +154,10 @@ const CourseEnrollmentForm = ({
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (isSubmitting) {
+      return;
+    }
+
     const { isValid, nextErrors } = validate();
     setErrors(nextErrors);
     if (!isValid) {
@@ -224,6 +230,7 @@ const CourseEnrollmentForm = ({
               onChange={handleSelectChange('university')}
               error={Boolean(errors.university)}
               helperText={errors.university}
+              disabled={isSubmitting}
               fullWidth
             >
               {universities.map((university) => (
@@ -240,6 +247,7 @@ const CourseEnrollmentForm = ({
               onChange={handleSelectChange('course')}
               error={Boolean(errors.course)}
               helperText={errors.course}
+              disabled={isSubmitting}
               fullWidth
             >
               {courses.map((course) => (
@@ -271,7 +279,7 @@ const CourseEnrollmentForm = ({
                       <IconButton
                         aria-label="remove student"
                         onClick={() => handleRemoveStudent(index)}
-                        disabled={students.length === 1}
+                        disabled={isSubmitting || students.length === 1}
                         size="small"
                       >
                         <RemoveCircleOutlineIcon />
@@ -284,6 +292,7 @@ const CourseEnrollmentForm = ({
                       onChange={handleStudentChange(index, 'fullName')}
                       error={Boolean(errors.students[index]?.fullName)}
                       helperText={errors.students[index]?.fullName}
+                      disabled={isSubmitting}
                       fullWidth
                     />
 
@@ -294,6 +303,7 @@ const CourseEnrollmentForm = ({
                       onChange={handleStudentChange(index, 'email')}
                       error={Boolean(errors.students[index]?.email)}
                       helperText={errors.students[index]?.email}
+                      disabled={isSubmitting}
                       fullWidth
                     />
                   </Stack>
@@ -306,7 +316,7 @@ const CourseEnrollmentForm = ({
               color="primary"
               startIcon={<AddIcon />}
               onClick={handleAddStudent}
-              disabled={students.length >= maxStudents}
+              disabled={isSubmitting || students.length >= maxStudents}
             >
               {addLabel}
             </Button>
@@ -320,8 +330,8 @@ const CourseEnrollmentForm = ({
               </Typography>
             </Paper>
 
-            <Button variant="contained" color="primary" type="submit" size="large">
-              {submitLabel}
+            <Button variant="contained" color="primary" type="submit" size="large" disabled={isSubmitting}>
+              {isSubmitting ? labels.submitting : submitLabel}
             </Button>
 
             {maxHint ? (
