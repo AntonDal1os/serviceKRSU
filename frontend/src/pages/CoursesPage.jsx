@@ -3,6 +3,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Alert,
   Box,
   Button,
   Chip,
@@ -136,6 +137,8 @@ const pluralize = (count, one, few, many) => {
 const CoursesPage = () => {
   const [faqCategoryId, setFaqCategoryId] = useState(faqCategories[0].id);
   const [faqMenuAnchor, setFaqMenuAnchor] = useState(null);
+  const [isSubmittingEnrollment, setIsSubmittingEnrollment] = useState(false);
+  const [enrollmentStatus, setEnrollmentStatus] = useState(null);
 
   const selectedFaqCategory = useMemo(
     () => faqCategories.find((category) => category.id === faqCategoryId) || faqCategories[0],
@@ -143,6 +146,13 @@ const CoursesPage = () => {
   );
 
   const handleSubmit = async (payload) => {
+    const selectedCourse = courses.find((course) => course.id === payload.courseId);
+    const courseName = selectedCourse?.name || payload.courseId;
+    const requestedCount = payload.students.length;
+
+    setIsSubmittingEnrollment(true);
+    setEnrollmentStatus(null);
+
     try {
       const response = await fetch(`${API_BASE_URL}/enrollment`, {
         method: 'POST',
@@ -157,9 +167,23 @@ const CoursesPage = () => {
         throw new Error(data?.error || 'Failed to submit enrollment');
       }
 
-      console.log('Enrollment submitted:', data);
+      const studentsCount = data?.students_count || requestedCount;
+      setEnrollmentStatus({
+        type: 'success',
+        courseName,
+        studentsCount,
+        enrollmentId: data?.enrollment_id,
+      });
     } catch (error) {
       console.error('Enrollment submit error:', error);
+      setEnrollmentStatus({
+        type: 'error',
+        courseName,
+        studentsCount: requestedCount,
+        message: error.message,
+      });
+    } finally {
+      setIsSubmittingEnrollment(false);
     }
   };
 
@@ -174,6 +198,7 @@ const CoursesPage = () => {
     addStudent: 'Добавить студента',
     submit: (count) =>
       `Записать ${count} ${pluralize(count, 'студента', 'студента', 'студентов')} на курс`,
+    submitting: 'Сохраняем запись...',
     policyText:
       'Защищено SmartCaptcha. Отправляя форму, вы подтверждаете согласие на обработку данных.',
     maxHint: (max) => `Максимальное количество студентов для записи: ${max} человек`,
@@ -195,12 +220,31 @@ const CoursesPage = () => {
 
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 3, md: 4 }} alignItems="stretch">
         <Box sx={{ flex: 1, minWidth: 0 }}>
+          {enrollmentStatus ? (
+            <Alert severity={enrollmentStatus.type} sx={{ mb: 2 }}>
+              {enrollmentStatus.type === 'success'
+                ? `Записано ${enrollmentStatus.studentsCount} ${pluralize(
+                    enrollmentStatus.studentsCount,
+                    'студента',
+                    'студента',
+                    'студентов',
+                  )} на курс «${enrollmentStatus.courseName}».`
+                : `Не удалось записать ${enrollmentStatus.studentsCount} ${pluralize(
+                    enrollmentStatus.studentsCount,
+                    'студента',
+                    'студента',
+                    'студентов',
+                  )} на курс «${enrollmentStatus.courseName}»: ${enrollmentStatus.message}`}
+            </Alert>
+          ) : null}
+
           <CourseEnrollmentForm
             universities={universities}
             courses={courses}
             maxStudents={30}
             labels={labels}
             onSubmit={handleSubmit}
+            isSubmitting={isSubmittingEnrollment}
           />
         </Box>
         <Box sx={{ width: { xs: '100%', md: 320, lg: 360 }, flexShrink: 0 }}>
