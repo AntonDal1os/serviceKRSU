@@ -1,5 +1,7 @@
 import os
+from datetime import datetime
 from pathlib import Path
+from uuid import uuid4
 
 import psycopg2
 from dotenv import load_dotenv
@@ -65,12 +67,73 @@ def init_db():
                     )
                     """
                 )
+                cursor.execute(
+                    """
+                    ALTER TABLE enrollments
+                    ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    """
+                )
+                cursor.execute(
+                    """
+                    UPDATE enrollments
+                    SET created_at = CURRENT_TIMESTAMP
+                    WHERE created_at IS NULL
+                    """
+                )
+                cursor.execute(
+                    """
+                    ALTER TABLE enrollments
+                    ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP,
+                    ALTER COLUMN created_at SET NOT NULL
+                    """
+                )
+                cursor.execute(
+                    """
+                    ALTER TABLE prof_dev_applications
+                    ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    """
+                )
+                cursor.execute(
+                    """
+                    UPDATE prof_dev_applications
+                    SET created_at = CURRENT_TIMESTAMP
+                    WHERE created_at IS NULL
+                    """
+                )
+                cursor.execute(
+                    """
+                    ALTER TABLE prof_dev_applications
+                    ALTER COLUMN created_at SET DEFAULT CURRENT_TIMESTAMP,
+                    ALTER COLUMN created_at SET NOT NULL
+                    """
+                )
     finally:
         connection.close()
 
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def build_upload_filename(field_name, original_filename):
+    original_name = Path(original_filename).name
+    original_extension = Path(original_name).suffix.lower()
+    sanitized_name = secure_filename(original_name)
+    sanitized_path = Path(sanitized_name)
+
+    if not original_extension:
+        return None
+
+    safe_stem = sanitized_path.stem
+    if not sanitized_path.suffix:
+        safe_stem = ""
+    if not safe_stem:
+        safe_stem = field_name
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    unique_suffix = uuid4().hex[:8]
+
+    return f"{safe_stem}_{timestamp}_{unique_suffix}{original_extension}"
 
 
 def create_enrollment(university_id, course_id, students):
@@ -81,8 +144,8 @@ def create_enrollment(university_id, course_id, students):
             with connection.cursor() as cursor:
                 cursor.execute(
                     """
-                    INSERT INTO enrollments (university_id, course_id)
-                    VALUES (%s, %s)
+                    INSERT INTO enrollments (university_id, course_id, created_at)
+                    VALUES (%s, %s, CURRENT_TIMESTAMP)
                     RETURNING id
                     """,
                     (university_id, course_id),
@@ -130,9 +193,10 @@ def create_prof_dev_application(
                         email,
                         phone,
                         statement_file_path,
-                        consent_file_path
+                        consent_file_path,
+                        created_at
                     )
-                    VALUES (%s, %s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
                     RETURNING id
                     """,
                     (
@@ -195,14 +259,19 @@ def prof_dev():
     def save_file(field_name):
         file = request.files.get(field_name)
         if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
+            filename = build_upload_filename(field_name, file.filename)
+            if not filename:
+                return None
             path = UPLOAD_FOLDER / filename
             file.save(path)
-            return str(path)
+            return str(path.resolve())
         return None
 
     statement_path = save_file("statementFile")
     consent_path = save_file("consentFile")
+
+    if not statement_path or not consent_path:
+        return jsonify({"error": "statementFile and consentFile are required"}), 422
 
     application_id = create_prof_dev_application(
         course_id=course_id,
