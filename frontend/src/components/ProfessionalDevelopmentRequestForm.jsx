@@ -6,7 +6,6 @@ import {
   Chip,
   Container,
   Divider,
-  Grid,
   IconButton,
   MenuItem,
   Paper,
@@ -381,8 +380,14 @@ const ProfessionalDevelopmentRequestForm = ({
               fullWidth
             />
 
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))' },
+                gap: 2,
+              }}
+            >
+              <Box>
                 <TextField
                   type="email"
                   label={labels.emailLabel}
@@ -392,8 +397,8 @@ const ProfessionalDevelopmentRequestForm = ({
                   helperText={errors.email}
                   fullWidth
                 />
-              </Grid>
-              <Grid item xs={12} sm={6}>
+              </Box>
+              <Box>
                 <TextField
                   type="tel"
                   label={labels.phoneLabel}
@@ -404,8 +409,8 @@ const ProfessionalDevelopmentRequestForm = ({
                   inputProps={{ inputMode: 'tel' }}
                   fullWidth
                 />
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
 
             <Divider>
               <Chip label={labels.documentsTitle} />
